@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseArticle from '../../components/CaseArticle.astro';
+
+export async function getStaticPaths() {
+  const cases = await getCollection('cases', (c) => c.data.lang === 'en');
+  return cases.map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+---
+
+<Base title={`${entry.data.title} — Agatha Gioielli`} description={entry.data.summary}>
+  <CaseArticle entry={entry} lang="en" />
+</Base>

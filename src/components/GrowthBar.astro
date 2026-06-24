@@ -1,0 +1,125 @@
+---
+interface Props {
+  label: string;
+  from: number;
+  to: number;
+  note?: string;
+}
+const { label, from, to, note } = Astro.props;
+---
+
+<div class="growth">
+  <span class="growth__label">{label}</span>
+  <div class="growth__readout">
+    <span class="growth__from">{from}</span>
+    <span class="growth__track" aria-hidden="true">
+      <span class="growth__fill"></span>
+    </span>
+    <span class="growth__to" data-to={to}>{to}</span>
+  </div>
+  {note && <span class="growth__note">{note}</span>}
+</div>
+
+<style>
+  .growth {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 1.1rem 1.3rem 1.25rem;
+    background: var(--ink-raise);
+    border: 1px solid var(--hairline-ink);
+    border-radius: 4px;
+    grid-column: span 2;
+  }
+  .growth::before,
+  .growth::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-color: var(--brass);
+    border-style: solid;
+    opacity: 0.7;
+  }
+  .growth::before { top: 6px; left: 6px; border-width: 1px 0 0 1px; }
+  .growth::after { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; }
+
+  .growth__label {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .growth__readout {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .growth__from,
+  .growth__to {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .growth__from { color: var(--muted); }
+  .growth__to { color: var(--brass); }
+  .growth__track {
+    position: relative;
+    flex: 1;
+    height: 3px;
+    background: rgba(200, 162, 75, 0.16);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .growth__fill {
+    position: absolute;
+    inset: 0;
+    transform-origin: left;
+    background: linear-gradient(90deg, var(--brass-dim), var(--brass));
+    animation: fill 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+  }
+  @keyframes fill {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  .growth__note {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .growth__fill { animation: none; transform: scaleX(1); }
+  }
+</style>
+
+<script>
+  // Count up the target number on first view. Progressive enhancement.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const el = document.querySelector<HTMLElement>('.growth__to');
+  if (el && !reduce) {
+    const target = Number(el.dataset.to ?? el.textContent ?? 0);
+    const start = Math.round(target * 0.2);
+    const duration = 1500;
+    let raf = 0;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        io.disconnect();
+        const t0 = performance.now();
+        const tick = (now: number) => {
+          const p = Math.min(1, (now - t0) / duration);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = String(Math.round(start + (target - start) * eased));
+          if (p < 1) raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+      }
+    });
+    io.observe(el);
+  }
+</script>

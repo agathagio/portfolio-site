@@ -1,0 +1,254 @@
+---
+import { getCollection } from 'astro:content';
+import { useTranslations, localizedPath } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+import { site } from '../config';
+import Readout from './Readout.astro';
+import GrowthBar from './GrowthBar.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const cv = lang === 'pt' ? site.cv.pt : site.cv.en;
+
+const cases = (await getCollection('cases', (c) => c.data.lang === lang)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const domainLabel: Record<string, Record<Lang, string>> = {
+  DATA: { en: 'Data & inventory', pt: 'Dados e estoque' },
+  CONTENT: { en: 'Content systems', pt: 'Sistemas de conteúdo' },
+  OPS: { en: 'Operations', pt: 'Operação' },
+};
+const idx = (n: number) => String(n).padStart(2, '0');
+---
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">{t('hero.eyebrow')}</p>
+    <h1 class="hero__title">
+      <span>{t('hero.headline.a')}</span>
+      <span>{t('hero.headline.b')}</span>
+      <span class="hero__accent">{t('hero.headline.c')}</span>
+    </h1>
+    <p class="hero__sub">{t('hero.sub')}</p>
+
+    <div class="hero__cta">
+      <a class="btn btn--solid" href={localizedPath(lang, '/#work')}>{t('hero.cta.work')}</a>
+      <a class="btn btn--ghost" href={cv} target="_blank" rel="noopener">{t('hero.cta.cv')}</a>
+    </div>
+
+    <div class="console" role="group" aria-label="Key metrics">
+      <GrowthBar label={t('readout.orders')} from={45} to={217} note={t('readout.orders.note')} />
+      <Readout label={t('readout.automations')} value="16+" note={t('readout.automations.note')} accent />
+      <Readout label={t('readout.years')} value="10" note={t('readout.years.note')} />
+      <Readout label={t('readout.team')} value="01" note={t('readout.team.note')} />
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section class="section work" id="work">
+  <div class="wrap">
+    <header class="work__head">
+      <h2 class="work__title">{t('cases.title')}</h2>
+      <p class="work__lede">{t('cases.lede')}</p>
+    </header>
+
+    <ol class="work__list">
+      {
+        cases.map((c, i) => (
+          <li class="card">
+            <a class="card__link" href={localizedPath(lang, `/cases/${c.data.slug}`)}>
+              <span class="card__index">{idx(i + 1)}</span>
+              <span class="card__meta">
+                <span class="card__tag">
+                  {c.data.domain} · {domainLabel[c.data.domain][lang]}
+                </span>
+                <span class="card__title">{c.data.title}</span>
+                <span class="card__summary">{c.data.summary}</span>
+                <span class="card__cta">
+                  {t('cases.read')} <span aria-hidden="true">↗</span>
+                </span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section about" id="about">
+  <div class="wrap about__grid">
+    <div class="about__col">
+      <p class="eyebrow">{t('about.title')}</p>
+    </div>
+    <div class="about__body">
+      <p class="about__lead">{t('about.body.a')}</p>
+      <p>{t('about.body.b')}</p>
+      <div class="about__cta">
+        <a class="btn btn--ghost" href={site.linkedin} target="_blank" rel="noopener">
+          {t('about.cta.linkedin')} <span aria-hidden="true">↗</span>
+        </a>
+        <a class="btn btn--ghost" href={cv} target="_blank" rel="noopener">{t('about.cta.cv')}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* HERO */
+  .hero {
+    padding-block: clamp(3rem, 1.5rem + 7vw, 7rem) clamp(3rem, 2rem + 5vw, 6rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60rem 30rem at 80% -10%, rgba(200, 162, 75, 0.08), transparent 60%),
+      linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.25));
+    pointer-events: none;
+  }
+  .hero > .wrap { position: relative; }
+  .hero__title {
+    margin-top: 1.4rem;
+    font-size: var(--step-4);
+    line-height: 1;
+    display: grid;
+    gap: 0.1em;
+    max-width: 16ch;
+  }
+  .hero__accent { color: var(--brass); }
+  .hero__sub {
+    margin-top: 1.8rem;
+    max-width: 50ch;
+    font-size: var(--step-1);
+    color: var(--on-ink);
+    line-height: 1.5;
+  }
+  .hero__cta {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    padding: 0.85em 1.4em;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn--solid {
+    background: var(--brass);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .btn--solid:hover { background: #d8b15c; }
+  .btn--ghost {
+    border: 1px solid var(--hairline-ink);
+    color: var(--on-ink);
+  }
+  .btn--ghost:hover { border-color: var(--brass); color: var(--brass); }
+
+  /* instrument console */
+  .console {
+    margin-top: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
+  }
+  @media (min-width: 48rem) {
+    .console { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  /* WORK */
+  .work__head { max-width: 54ch; margin-bottom: clamp(2rem, 1rem + 3vw, 3.5rem); }
+  .work__title { font-size: var(--step-3); }
+  .work__lede { margin-top: 1rem; color: var(--muted); font-size: var(--step-0); }
+
+  .work__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--hairline-ink);
+  }
+  .card { border-bottom: 1px solid var(--hairline-ink); }
+  .card__link {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(1rem, 0.5rem + 3vw, 3rem);
+    padding: clamp(1.6rem, 1rem + 2vw, 2.6rem) 0.4rem;
+    text-decoration: none;
+    transition: padding-left 0.25s ease, background 0.25s ease;
+  }
+  .card__link:hover {
+    padding-left: 1.2rem;
+    background: linear-gradient(90deg, var(--ink-raise), transparent 70%);
+  }
+  .card__index {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--brass-dim);
+    padding-top: 0.4rem;
+  }
+  .card__meta { display: flex; flex-direction: column; gap: 0.55rem; }
+  .card__tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+  .card__title {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    max-width: 24ch;
+  }
+  .card__summary { color: var(--muted); max-width: 60ch; font-size: var(--step-0); }
+  .card__cta {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+    color: var(--on-ink);
+    margin-top: 0.3rem;
+  }
+  .card__cta span { color: var(--brass); }
+
+  /* ABOUT */
+  .about { border-top: 1px solid var(--hairline-ink); }
+  .about__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+  @media (min-width: 52rem) {
+    .about__grid { grid-template-columns: 12rem minmax(0, 1fr); gap: 3rem; }
+  }
+  .about__body { max-width: 60ch; }
+  .about__lead {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  .about__cta { margin-top: 1.8rem; display: flex; flex-wrap: wrap; gap: 0.8rem; }
+</style>

@@ -1,0 +1,105 @@
+---
+import { getLangFromUrl, useTranslations, altLangPath, localizedPath } from '../i18n/utils';
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const alt = altLangPath(Astro.url, lang);
+---
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="nav__mark" href={localizedPath(lang, '/')}>
+      <span class="nav__name">AGATHA GIOIELLI</span>
+      <span class="nav__status" aria-label={t('nav.status')}>
+        <span class="nav__dot" aria-hidden="true"></span>{t('nav.status')}
+      </span>
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      <a href={localizedPath(lang, '/#work')}>{t('nav.work')}</a>
+      <a href={localizedPath(lang, '/#about')}>{t('nav.about')}</a>
+      <a class="nav__lang" href={alt} hreflang={lang === 'en' ? 'pt' : 'en'}>{t('lang.switch')}</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--ink) 86%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--hairline-ink);
+  }
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 4rem;
+    padding-block: 0.6rem;
+  }
+  .nav__mark {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    text-decoration: none;
+  }
+  .nav__name {
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    letter-spacing: 0.18em;
+    font-weight: 500;
+  }
+  .nav__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .nav__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--brass);
+    box-shadow: 0 0 0 0 rgba(200, 162, 75, 0.6);
+    animation: pulse 2.6s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(200, 162, 75, 0.5); }
+    70% { box-shadow: 0 0 0 7px rgba(200, 162, 75, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(200, 162, 75, 0); }
+  }
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2.5vw, 2rem);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+  }
+  .nav__links a {
+    text-decoration: none;
+    color: var(--muted);
+    transition: color 0.2s ease;
+  }
+  .nav__links a:hover {
+    color: var(--on-ink);
+  }
+  .nav__lang {
+    color: var(--brass) !important;
+    border: 1px solid var(--hairline-ink);
+    padding: 0.4em 0.8em;
+    border-radius: 999px;
+  }
+  .nav__lang:hover {
+    border-color: var(--brass);
+  }
+  @media (max-width: 38rem) {
+    .nav__status { display: none; }
+  }
+</style>

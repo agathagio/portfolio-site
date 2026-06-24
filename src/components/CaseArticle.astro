@@ -1,0 +1,270 @@
+---
+import { render, getCollection, type CollectionEntry } from 'astro:content';
+import { useTranslations, localizedPath } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  entry: CollectionEntry<'cases'>;
+  lang: Lang;
+}
+const { entry, lang } = Astro.props;
+const t = useTranslations(lang);
+const { Content } = await render(entry);
+
+// resolve related cases (same lang) by slug
+const all = await getCollection('cases');
+const related = entry.data.related
+  .map((slug) => all.find((c) => c.data.slug === slug && c.data.lang === lang))
+  .filter((c): c is CollectionEntry<'cases'> => Boolean(c));
+
+const domainLabel: Record<string, string> = {
+  DATA: 'Data',
+  CONTENT: 'Content',
+  OPS: 'Operations',
+};
+---
+
+<article class="case">
+  <header class="case__head">
+    <div class="wrap">
+      <a class="case__back" href={localizedPath(lang, '/#work')}>← {t('case.back')}</a>
+      <span class="case__tag">{entry.data.domain} · {domainLabel[entry.data.domain]}</span>
+      <h1 class="case__title">{entry.data.title}</h1>
+      <p class="case__lede">{entry.data.summary}</p>
+    </div>
+  </header>
+
+  <div class="case__body">
+    <div class="wrap case__grid">
+      <div class="case__prose">
+        <Content />
+      </div>
+      <aside class="case__aside">
+        <div class="panel">
+          <span class="panel__label">{t('case.stack')}</span>
+          <ul class="panel__list">
+            {entry.data.stack.map((s) => <li>{s}</li>)}
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  {
+    related.length > 0 && (
+      <nav class="case__related" aria-label={t('case.related')}>
+        <div class="wrap">
+          <span class="case__related-label">{t('case.related')}</span>
+          <ul>
+            {related.map((c) => (
+              <li>
+                <a href={localizedPath(lang, `/cases/${c.data.slug}`)}>
+                  <span class="case__related-tag">{c.data.domain}</span>
+                  {c.data.title}
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+    )
+  }
+</article>
+
+<style>
+  .case__head {
+    background: var(--ink);
+    border-bottom: 1px solid var(--hairline-ink);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem) clamp(2rem, 1.2rem + 3vw, 3.5rem);
+  }
+  .case__back {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 2rem;
+  }
+  .case__back:hover { color: var(--brass); }
+  .case__tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 1rem;
+  }
+  .case__title {
+    font-size: var(--step-4);
+    max-width: 20ch;
+  }
+  .case__lede {
+    margin-top: 1.4rem;
+    max-width: 52ch;
+    font-size: var(--step-1);
+    color: var(--on-ink);
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.35;
+  }
+
+  /* reading surface */
+  .case__body {
+    background: var(--paper);
+    color: var(--on-paper);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem);
+  }
+  .case__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 4vw, 4rem);
+  }
+  @media (min-width: 56rem) {
+    .case__grid {
+      grid-template-columns: minmax(0, 1fr) 16rem;
+    }
+  }
+  .case__prose {
+    max-width: var(--measure);
+  }
+
+  .case__aside { position: relative; }
+  @media (min-width: 56rem) {
+    .case__aside { position: sticky; top: 6rem; align-self: start; }
+  }
+  .panel {
+    border: 1px solid var(--hairline-paper);
+    border-top: 2px solid var(--brass);
+    border-radius: 4px;
+    padding: 1.2rem 1.3rem 1.4rem;
+    background: rgba(255, 255, 255, 0.4);
+  }
+  .panel__label {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted-paper);
+  }
+  .panel__list {
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .panel__list li {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    padding-left: 1rem;
+    position: relative;
+  }
+  .panel__list li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--brass-dim);
+  }
+
+  /* related */
+  .case__related {
+    background: var(--ink);
+    padding-block: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+    border-top: 1px solid var(--hairline-ink);
+  }
+  .case__related-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.4rem;
+  }
+  .case__related ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .case__related a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--hairline-ink);
+    border-radius: 4px;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .case__related a:hover {
+    border-color: var(--brass);
+    background: var(--ink-raise);
+  }
+  .case__related a span[aria-hidden] { margin-left: auto; color: var(--brass); }
+  .case__related-tag {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    color: var(--brass);
+    align-self: center;
+  }
+</style>
+
+<style is:global>
+  /* prose styling scoped to the reading surface */
+  .case__prose h2 {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    letter-spacing: -0.02em;
+    margin-top: 2.6rem;
+    margin-bottom: 0.9rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--hairline-paper);
+  }
+  .case__prose h2:first-child { margin-top: 0; border-top: 0; padding-top: 0; }
+  .case__prose p { margin-bottom: 1.1rem; }
+  .case__prose ul {
+    margin: 0 0 1.3rem;
+    padding-left: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .case__prose ul li {
+    padding-left: 1.4rem;
+    position: relative;
+  }
+  .case__prose ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 8px;
+    height: 1px;
+    background: var(--brass-dim);
+  }
+  .case__prose strong { font-weight: 600; }
+  .case__prose code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    background: rgba(26, 26, 31, 0.07);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+  }
+  .case__prose a {
+    color: var(--on-paper);
+    text-decoration-color: var(--brass);
+    font-weight: 500;
+  }
+  .case__prose a:hover { color: var(--brass-dim); }
+</style>

@@ -1,0 +1,73 @@
+---
+interface Props {
+  label: string;
+  value: string;
+  note?: string;
+  accent?: boolean;
+}
+const { label, value, note, accent = false } = Astro.props;
+---
+
+<div class:list={['readout', { 'readout--accent': accent }]}>
+  <span class="readout__label">{label}</span>
+  <span class="readout__value">{value}</span>
+  {note && <span class="readout__note">{note}</span>}
+</div>
+
+<style>
+  .readout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.1rem 1.2rem 1.2rem;
+    background: var(--ink-raise);
+    border: 1px solid var(--hairline-ink);
+    border-radius: 4px;
+  }
+  /* corner ticks: instrument-panel detail */
+  .readout::before,
+  .readout::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-color: var(--brass);
+    border-style: solid;
+    opacity: 0.7;
+  }
+  .readout::before {
+    top: 6px;
+    left: 6px;
+    border-width: 1px 0 0 1px;
+  }
+  .readout::after {
+    bottom: 6px;
+    right: 6px;
+    border-width: 0 1px 1px 0;
+  }
+  .readout__label {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .readout__value {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--on-ink);
+  }
+  .readout--accent .readout__value {
+    color: var(--brass);
+  }
+  .readout__note {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+</style>
