@@ -26,8 +26,6 @@ export const ui = {
     'readout.automations.note': 'built with Claude Code',
     'readout.years': 'Years',
     'readout.years.note': 'growth · analytics · e-commerce',
-    'readout.team': 'Team',
-    'readout.team.note': 'lean, AI-amplified',
     'cases.title': 'Selected systems',
     'cases.lede':
       'Three production systems, sanitized for the public. Each one started as a real bottleneck and became something the operation runs on every week.',
@@ -65,8 +63,6 @@ export const ui = {
     'readout.automations.note': 'construídas com Claude Code',
     'readout.years': 'Anos',
     'readout.years.note': 'growth · analytics · e-commerce',
-    'readout.team': 'Equipe',
-    'readout.team.note': 'enxuta, ampliada por IA',
     'cases.title': 'Sistemas selecionados',
     'cases.lede':
       'Três sistemas de produção, sanitizados para o público. Cada um nasceu de um gargalo real e virou algo que a operação roda toda semana.',
