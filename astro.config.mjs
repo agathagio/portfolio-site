@@ -3,8 +3,7 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-  // Atualizar para o domínio .pages.dev quando o site estiver no ar.
-  site: 'https://portfolio-site.pages.dev',
+  site: 'https://portfolio-site.agathagioielli.workers.dev',
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'pt'],
