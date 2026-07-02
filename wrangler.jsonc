@@ -1,7 +1,7 @@
 {
   // Configuração do deploy como Cloudflare Worker de assets estáticos.
   // O build (npm run build) gera o site em ./dist; o Worker só serve esses arquivos.
-  "name": "portfolio-site",
+  "name": "www",
   "compatibility_date": "2026-07-01",
   "assets": {
     "directory": "./dist",
