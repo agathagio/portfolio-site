@@ -4,7 +4,7 @@ lang: en
 order: 1
 domain: OPS
 title: An AI-amplified e-commerce operation
-summary: How I launched and run a fashion e-commerce with a lean team and 16+ automations built with Claude Code.
+summary: 'Launching and running a digital channel with a lean team: acquisition, CRM, inventory and content, with AI automations absorbing the repetitive work.'
 stack:
   - Claude Code (custom skills)
   - Python (pandas, openpyxl)

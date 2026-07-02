@@ -4,7 +4,7 @@ lang: pt
 order: 1
 domain: OPS
 title: Operação de e-commerce ampliada por IA
-summary: Como lancei e opero um e-commerce de moda com equipe enxuta e 16+ automações construídas com Claude Code.
+summary: 'Lançamento e operação de um canal digital com equipe enxuta: aquisição, CRM, estoque e conteúdo, com automações de IA absorvendo o trabalho repetitivo.'
 stack:
   - Claude Code (skills customizadas)
   - Python (pandas, openpyxl)

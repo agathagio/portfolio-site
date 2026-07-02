@@ -3,8 +3,6 @@ import { getCollection } from 'astro:content';
 import { useTranslations, localizedPath } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 import { site } from '../config';
-import Readout from './Readout.astro';
-import GrowthBar from './GrowthBar.astro';
 
 interface Props {
   lang: Lang;
@@ -39,12 +37,6 @@ const idx = (n: number) => String(n).padStart(2, '0');
     <div class="hero__cta">
       <a class="btn btn--solid" href={localizedPath(lang, '/#work')}>{t('hero.cta.work')}</a>
       <a class="btn btn--ghost" href={cv} target="_blank" rel="noopener">{t('hero.cta.cv')}</a>
-    </div>
-
-    <div class="console" role="group" aria-label="Key metrics">
-      <GrowthBar label={t('readout.orders')} from={45} to={217} note={t('readout.orders.note')} />
-      <Readout label={t('readout.automations')} value="16+" note={t('readout.automations.note')} accent />
-      <Readout label={t('readout.years')} value="10" note={t('readout.years.note')} />
     </div>
   </div>
 </section>
@@ -164,17 +156,6 @@ const idx = (n: number) => String(n).padStart(2, '0');
     color: var(--on-ink);
   }
   .btn--ghost:hover { border-color: var(--brass); color: var(--brass); }
-
-  /* instrument console */
-  .console {
-    margin-top: clamp(2.5rem, 1.5rem + 4vw, 4rem);
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.9rem;
-  }
-  @media (min-width: 48rem) {
-    .console { grid-template-columns: repeat(4, 1fr); }
-  }
 
   /* WORK */
   .work__head { max-width: 54ch; margin-bottom: clamp(2rem, 1rem + 3vw, 3.5rem); }

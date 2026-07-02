@@ -2,6 +2,7 @@
 import { render, getCollection, type CollectionEntry } from 'astro:content';
 import { useTranslations, localizedPath } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
+import GrowthBar from './GrowthBar.astro';
 
 interface Props {
   entry: CollectionEntry<'cases'>;
@@ -31,6 +32,13 @@ const domainLabel: Record<string, string> = {
       <span class="case__tag">{entry.data.domain} · {domainLabel[entry.data.domain]}</span>
       <h1 class="case__title">{entry.data.title}</h1>
       <p class="case__lede">{entry.data.summary}</p>
+      {
+        entry.data.slug === 'ai-operation' && (
+          <div class="case__growth">
+            <GrowthBar label={t('readout.orders')} from={45} to={217} note={t('readout.orders.note')} />
+          </div>
+        )
+      }
     </div>
   </header>
 
@@ -109,6 +117,10 @@ const domainLabel: Record<string, string> = {
     font-family: var(--font-display);
     font-weight: 400;
     line-height: 1.35;
+  }
+  .case__growth {
+    margin-top: 2.2rem;
+    max-width: 28rem;
   }
 
   /* reading surface */
